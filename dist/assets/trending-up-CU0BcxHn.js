@@ -1,0 +1,1 @@
+import{It as e}from"./index-C6o09lyJ.js";var t={name:`clock`,size:24,node:[[`circle`,{cx:`12`,cy:`12`,r:`10`,key:`1mglay`}],[`path`,{d:`M12 6v6l4 2`,key:`mmk7yg`}]]};t.node;var n=e(t),r={name:`trending-up`,size:24,node:[[`path`,{d:`M16 7h6v6`,key:`box55l`}],[`path`,{d:`m22 7-8.5 8.5-5-5L2 17`,key:`1t1m79`}]]};r.node;var i=e(r);export{n,i as t};
