@@ -1,0 +1,44 @@
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+
+# Dependencies
+**/node_modules/
+
+# Build output
+/dist/
+/build/
+**/dist/
+**/build/
+desktop/src-tauri/target/
+
+# Tool and test caches
+**/.vite/
+**/.cache/
+**/coverage/
+**/playwright-report/
+**/test-results/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/

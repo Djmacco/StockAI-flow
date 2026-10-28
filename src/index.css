@@ -63,6 +63,7 @@ body { @apply bg-canvas text-body font-sans text-[14px] antialiased; margin: 0; 
   .sales-report-print th, .sales-report-print td { border: 1px solid #bbb; padding: 2mm; text-align: left; }
   .sales-report-print th { background: #eee !important; }
   .sales-report-print tr { break-inside: avoid; }
+  .print-actions { display: none !important; }
   @page { margin: 4mm; }
 }
 

@@ -37,6 +37,7 @@
     "movements": "Movements & lots",
     "customers": "Customers & credit",
     "reports": "Reports",
+    "companyMonitor": "Company sales",
     "scan": "AI store scan",
     "settings": "Settings",
     "assistant": "AI assistant",
@@ -655,7 +656,7 @@
     "server": "Developer options",
     "serverExplain": "StockFlow server address (online backend). Development only: in the final version the address is built into the app and this section is not shown.",
     "noBackend": "No online server is configured.",
-    "noServerNotice": "Online services (Premium payment, sync, AI scan) are not available in this version yet. Everything else works normally offline."
+    "noServerNotice": "The cloud connection is not configured for this website. Set VITE_CLOUD_API_URL in the website hosting settings, then redeploy."
   },
   "sync": {
     "premiumOnly": "Cloud sync is a Premium feature",

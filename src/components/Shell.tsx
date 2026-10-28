@@ -1,6 +1,6 @@
 import {
   AlertTriangle, Boxes, Check, CloudOff, Crown, Database, LayoutDashboard, LogOut, Mic, Moon, RefreshCw, ScanLine,
-  Lightbulb, Settings as SettingsIcon, ShoppingCart, Sun, Truck, Users, BarChart3, ArrowLeftRight, PackageSearch, Circle, ClipboardCheck, FileText,
+  Lightbulb, Settings as SettingsIcon, ShoppingCart, Sun, Truck, Users, BarChart3, ArrowLeftRight, PackageSearch, Circle, ClipboardCheck, FileText, Eye,
 } from 'lucide-react';
 import { type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,7 @@ const NAV = [
   { to: '/counts', key: 'counts', icon: ClipboardCheck, perm: 'inventory.adjust' },
   { to: '/documents', key: 'documents', icon: FileText, perm: 'sales.read' },
   { to: '/reports', key: 'reports', icon: BarChart3, perm: 'reports.read' },
+  { to: '/company', key: 'companyMonitor', icon: Eye, perm: null, webOnly: true },
   { to: '/scan', key: 'scan', icon: ScanLine, perm: 'inventory.adjust', premium: true },
   { to: '/settings', key: 'settings', icon: SettingsIcon, perm: null },
 ] as const;
@@ -96,7 +97,7 @@ function Sidebar() {
   const { t } = useTranslation();
   const { permissions: perms, entitlement, desktop } = useApp();
   const premium = entitlement.state === 'ACTIVE';
-  const items = NAV.filter((n) => (desktop || n.key !== 'voice') && (!n.perm || perms.has(n.perm) || (n.key === 'purchases' && perms.has('suppliers.read'))));
+  const items = NAV.filter((n) => (desktop || n.key !== 'voice') && (!('webOnly' in n && n.webOnly) || !desktop) && (!n.perm || perms.has(n.perm) || (n.key === 'purchases' && perms.has('suppliers.read'))));
   return (
     <nav className="flex w-[208px] shrink-0 flex-col gap-0.5 border-r border-line bg-surface p-2.5 max-lg:w-[180px] max-md:w-14 max-md:px-1.5">
       {items.map((n) => (

@@ -37,6 +37,7 @@
     "movements": "Mouvements & lots",
     "customers": "Clients & crédits",
     "reports": "Rapports",
+    "companyMonitor": "Ventes de l’entreprise",
     "scan": "Scan du magasin IA",
     "settings": "Paramètres",
     "assistant": "Assistant IA",
@@ -655,7 +656,7 @@
     "server": "Options développeur",
     "serverExplain": "Adresse du serveur StockFlow (backend en ligne). Réservé au développement : dans la version finale, l'adresse est intégrée à l'application et cette section n'apparaît pas.",
     "noBackend": "Aucun serveur en ligne n'est configuré.",
-    "noServerNotice": "Les services en ligne (paiement Premium, synchronisation, scan IA) ne sont pas encore disponibles dans cette version. Tout le reste fonctionne normalement hors ligne."
+    "noServerNotice": "La connexion cloud n’est pas configurée pour ce site. Définissez VITE_CLOUD_API_URL dans l’hébergement du site, puis redéployez."
   },
   "sync": {
     "premiumOnly": "La synchronisation cloud est une fonction Premium",

@@ -1,4 +1,4 @@
-import { CheckCircle2, Cloud, Network, PackageSearch, RefreshCw, WifiOff } from 'lucide-react';
+import { Activity, CheckCircle2, Cloud, Network, PackageSearch, RefreshCw, WifiOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NewKeyModal } from '../components/RecoveryKey';
@@ -12,6 +12,7 @@ import { useOnline } from '../state/hooks';
 import { joinHub } from '../lan/network';
 import { netErrorText } from './SettingsNetwork';
 import { useApp } from '../state/app';
+import { CompanyMonitor } from './CompanyMonitor';
 
 function Frame({ children, title, subtitle }: { children: React.ReactNode; title: string; subtitle: string }) {
   const { lang, setLang, desktop } = useApp();
@@ -94,6 +95,7 @@ export function Setup() {
   const { completeSetup, toast, desktop, lang } = useApp();
   const [restore, setRestore] = useState(false);
   const [join, setJoin] = useState(false);
+  const [companyMonitor, setCompanyMonitor] = useState(false);
   const [f, setF] = useState({ business_name: '', branch_name: '', full_name: '', username: '', password: '', confirm: '' });
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
   const { run, busy } = useAction(async () => {
@@ -102,10 +104,11 @@ export function Setup() {
   });
   if (restore) return <RestoreFlow onBack={() => setRestore(false)} />;
   if (join) return <JoinFlow onBack={() => setJoin(false)} />;
+  if (companyMonitor) return <CompanyMonitor onBack={() => setCompanyMonitor(false)} />;
   if (!desktop) return (
     <Frame title={lang === 'fr' ? 'Connectez-vous à votre magasin' : 'Connect to your shop'} subtitle={lang === 'fr' ? 'Ouvrez votre inventaire synchronisé dans StockFlow AI Web.' : 'Open your existing cloud-synced inventory in StockFlow AI Web.'}>
-      <p className="mb-5 text-[13px] text-body">{lang === 'fr' ? 'Cette version affiche les données du magasin en lecture seule. La restauration utilise le compte cloud du magasin et conserve une copie distincte dans ce navigateur.' : 'This is a secure, read-only view of your shop. Restore uses your shop cloud account and keeps a separate copy in this browser.'}</p>
-      <Button size="lg" className="w-full" onClick={() => setRestore(true)} icon={<Cloud className="h-4 w-4" />}>{lang === 'fr' ? 'Connecter les données du magasin' : 'Connect to shop data'}</Button>
+      <p className="mb-5 text-[13px] text-body">{lang === 'fr' ? 'Consultez les ventes synchronisées depuis votre téléphone, ou restaurez une copie locale complète du magasin dans ce navigateur.' : 'Monitor synced company sales from your phone, or restore a full local copy of the shop into this browser.'}</p>
+      <div className="space-y-2"><Button size="lg" className="w-full" onClick={() => setCompanyMonitor(true)} icon={<Activity className="h-4 w-4" />}>{lang === 'fr' ? 'Voir les ventes de l’entreprise' : 'Monitor company sales'}</Button><Button variant="secondary" size="lg" className="w-full" onClick={() => setRestore(true)} icon={<Cloud className="h-4 w-4" />}>{lang === 'fr' ? 'Restaurer les données du magasin' : 'Restore shop data'}</Button></div>
     </Frame>
   );
   return (

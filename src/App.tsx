@@ -20,6 +20,7 @@ const Reports = lazy(() => import('./pages/Reports').then((m) => ({ default: m.R
 const Scan = lazy(() => import('./pages/Scan').then((m) => ({ default: m.Scan })));
 const StockCount = lazy(() => import('./pages/StockCount').then((m) => ({ default: m.StockCount })));
 const SettingsPage = lazy(() => import('./pages/Settings').then((m) => ({ default: m.SettingsPage })));
+const CompanyMonitor = lazy(() => import('./pages/CompanyMonitor').then((m) => ({ default: m.CompanyMonitor })));
 
 export default function App() {
   const { ready, bootError, user, setupNeeded, recoveryKey } = useApp();
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="counts" element={<StockCount />} />
           <Route path="documents" element={<Documents />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="company" element={<CompanyMonitor />} />
           <Route path="scan" element={<Scan />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
