@@ -1,0 +1,17 @@
+{
+  "id": "/",
+  "name": "StockFlow AI — Shop management",
+  "short_name": "StockFlow AI",
+  "description": "View your shop products, stock movements, sales and reports.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f8fc",
+  "theme_color": "#f6f8fc",
+  "icons": [
+    { "src": "/icons/stockflow-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/stockflow-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -34,6 +34,7 @@
 
 html, body, #root { height: 100%; }
 body { @apply bg-canvas text-body font-sans text-[14px] antialiased; margin: 0; overflow: hidden; }
+.mobile-bottom-nav { padding-bottom: env(safe-area-inset-bottom, 0px); }
 * { scrollbar-width: thin; scrollbar-color: rgb(var(--line-strong)) transparent; }
 .num { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: 'tnum', 'lnum'; }
 

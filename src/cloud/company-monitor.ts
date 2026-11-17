@@ -14,6 +14,27 @@ export interface MonitorResponse {
   paymentBreakdown: { paymentMethod: string; count: number; total: number }[];
   nextCursor: string | null;
 }
+export interface MonitorOverview {
+  stock: {
+    productCount: number; lowStockCount: number; outOfStockCount: number;
+    lowStock: { id: string; name: string; sku: string; quantity: number; minimumStock: number; unit: string }[];
+    outOfStock: { id: string; name: string; sku: string; quantity: number; minimumStock: number; unit: string }[];
+  };
+  cash: {
+    openRegisterCount: number;
+    recentSessions: {
+      id: string; cashier: string; openedAt: string; closedAt: string | null; status: 'OPEN' | 'CLOSED';
+      openingFloat: number; expectedCash: number; countedCash: number | null; difference: number | null; salesCount: number | null;
+    }[];
+  };
+}
+export interface MonitorInventory {
+  products: { id: string; name: string; sku: string; quantity: number; minimumStock: number; unit: string; updatedAt: string }[];
+  productCount: number; nextProductOffset: number | null;
+  movements: { id: string; productName: string; type: string; quantity: number; createdAt: string; reason: string; userName: string }[];
+  movementTotals: { received: number; removed: number; count: number };
+  nextCursor: string | null;
+}
 export interface MonitorAccount { name: string; fullName: string; email: string }
 const ACCOUNT_KEY = 'stockflow.company-monitor.account';
 
@@ -97,6 +118,20 @@ export function getMonitorSales(filters: { from: string; to: string; paymentMeth
   if (filters.search) params.set('search', filters.search);
   if (filters.cursor) params.set('cursor', filters.cursor);
   return call<MonitorResponse>(`/company/transactions?${params}`);
+}
+
+export function getMonitorOverview() {
+  return call<MonitorOverview>('/company/overview');
+}
+
+export function getMonitorInventory(filters: { from?: string; to?: string; cursor?: string | null; limit?: number; productOffset?: number; productLimit?: number } = {}) {
+  const params = new URLSearchParams({ limit: String(filters.limit ?? 50) });
+  if (filters.from) params.set('from', filters.from);
+  if (filters.to) params.set('to', filters.to);
+  if (filters.cursor) params.set('cursor', filters.cursor);
+  if (filters.productOffset != null) params.set('productOffset', String(filters.productOffset));
+  if (filters.productLimit != null) params.set('productLimit', String(filters.productLimit));
+  return call<MonitorInventory>(`/company/inventory?${params}`);
 }
 
 export async function monitorLogout() {

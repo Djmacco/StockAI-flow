@@ -1,8 +1,8 @@
 import {
-  AlertTriangle, Boxes, Check, CloudOff, Crown, Database, LayoutDashboard, LogOut, Mic, Moon, RefreshCw, ScanLine,
+  AlertTriangle, Boxes, Check, CloudOff, Crown, Database, Download, LayoutDashboard, LogOut, Mic, Moon, RefreshCw, ScanLine,
   Lightbulb, Settings as SettingsIcon, ShoppingCart, Sun, Truck, Users, BarChart3, ArrowLeftRight, PackageSearch, Circle, ClipboardCheck, FileText, Eye,
 } from 'lucide-react';
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useNet } from '../lan/useNet';
@@ -58,6 +58,24 @@ function Header() {
   const nav = useNavigate();
   const { user, lang, theme, entitlement, setLang, setTheme, logout, setAssistantOpen, assistantOpen, settings, desktop } = useApp();
   const premium = entitlement.state === 'ACTIVE';
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [installed, setInstalled] = useState(false);
+  const [showInstallHelp, setShowInstallHelp] = useState(false);
+  useEffect(() => {
+    const beforeInstall = (event: Event) => { event.preventDefault(); setInstallPrompt(event); };
+    const onInstalled = () => { setInstalled(true); setInstallPrompt(null); setShowInstallHelp(false); };
+    setInstalled(window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true);
+    window.addEventListener('beforeinstallprompt', beforeInstall);
+    window.addEventListener('appinstalled', onInstalled);
+    return () => { window.removeEventListener('beforeinstallprompt', beforeInstall); window.removeEventListener('appinstalled', onInstalled); };
+  }, []);
+  const install = async () => {
+    if (!installPrompt) { setShowInstallHelp((value) => !value); return; }
+    await installPrompt.prompt();
+    const result = await installPrompt.userChoice;
+    if (result?.outcome === 'accepted') setInstalled(true);
+    setInstallPrompt(null);
+  };
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-line bg-surface px-4 max-md:px-2">
       <div className="flex items-center gap-3">
@@ -68,6 +86,10 @@ function Header() {
         </div>
       </div>
       <div className="flex items-center gap-2.5 max-md:gap-1.5">
+        {!desktop && !installed && <div className="relative md:hidden">
+          <button onClick={() => void install()} aria-label={lang === 'fr' ? 'Installer StockFlow AI' : 'Install StockFlow AI'} title={lang === 'fr' ? 'Installer sur ce téléphone' : 'Install on this phone'} className="grid h-9 w-9 place-items-center rounded-lg border border-brand/30 bg-brand-soft text-brand"><Download className="h-4 w-4" /></button>
+          {showInstallHelp && <div role="status" className="absolute right-0 top-11 z-50 w-64 rounded-lg border border-line bg-surface p-3 text-xs leading-5 text-body shadow-pop">{lang === 'fr' ? 'Dans le menu du navigateur, choisissez « Ajouter à l’écran d’accueil » pour installer l’application.' : 'Open your browser menu and choose “Add to Home Screen” to install the app.'}</div>}
+        </div>}
         <span className="max-md:hidden"><SyncPill /></span>
         <button className="max-md:hidden" onClick={() => nav('/settings?tab=subscription')}>
           {premium
@@ -99,7 +121,7 @@ function Sidebar() {
   const premium = entitlement.state === 'ACTIVE';
   const items = NAV.filter((n) => (desktop || n.key !== 'voice') && (!('webOnly' in n && n.webOnly) || !desktop) && (!n.perm || perms.has(n.perm) || (n.key === 'purchases' && perms.has('suppliers.read'))));
   return (
-    <nav className="flex w-[208px] shrink-0 flex-col gap-0.5 border-r border-line bg-surface p-2.5 max-lg:w-[180px] max-md:w-14 max-md:px-1.5">
+    <nav className="flex w-[208px] shrink-0 flex-col gap-0.5 border-r border-line bg-surface p-2.5 max-lg:w-[180px] max-md:hidden">
       {items.map((n) => (
         <NavLink key={n.to} to={n.to} end={n.to === '/'}
           className={({ isActive }) => cn('flex h-9 items-center gap-3 rounded px-3 text-[13px] font-medium transition-colors max-md:justify-center max-md:px-2', isActive ? ('ai' in n && n.ai ? 'bg-ai-soft text-ai-text' : 'bg-brand-soft text-brand') : 'text-body hover:bg-muted')}>
@@ -113,12 +135,25 @@ function Sidebar() {
   );
 }
 
+function MobileNav() {
+  const { t } = useTranslation();
+  const { permissions: perms, desktop } = useApp();
+  const items = [
+    NAV[0], NAV[4], NAV[6], NAV[10], NAV[11],
+  ].filter((item) => (!item.perm || perms.has(item.perm)) && (!('webOnly' in item && item.webOnly) || !desktop));
+  return <nav aria-label={t('nav.primary', { defaultValue: 'Main navigation' })} style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }} className="mobile-bottom-nav z-30 grid shrink-0 border-t border-line bg-surface/95 px-1 pt-1 backdrop-blur md:hidden">
+    {items.map((item) => <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => cn('flex min-h-14 flex-col items-center justify-center gap-1 rounded-md px-1 text-[10px] font-medium transition-colors', isActive ? 'text-brand' : 'text-faint')}>
+      <item.icon className="h-[19px] w-[19px]" /><span className="max-w-full truncate">{t(`nav.${item.key}`)}</span>
+    </NavLink>)}
+  </nav>;
+}
+
 function StatusBar() {
   const { t } = useTranslation();
   const { sync, desktop, entitlement, lang } = useApp();
   const { lan } = useNet();
   return (
-    <footer className="flex h-7 shrink-0 items-center justify-between border-t border-line bg-surface px-4 text-[11px] text-faint">
+    <footer className="flex h-7 shrink-0 items-center justify-between border-t border-line bg-surface px-4 text-[11px] text-faint max-md:hidden">
       <div className="flex items-center gap-4">
         <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-ok" />{desktop ? t('status.sqlite') : lang === 'fr' ? 'Base navigateur · enregistrée sur cet appareil' : 'Browser database · saved on this device'}</span>
         {(entitlement.state === 'ACTIVE' || lan) && sync && <span>{t('status.queue', { count: sync.pending })}</span>}
@@ -153,6 +188,7 @@ export function Shell() {
         <main className="min-w-0 flex-1 overflow-y-auto p-6 max-md:p-3"><Outlet /></main>
         <AssistantPanel />
       </div>
+      {!desktop && <MobileNav />}
       <StatusBar />
       <Toaster />
     </div>

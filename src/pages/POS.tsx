@@ -13,7 +13,7 @@ import { addDaysTo, createProforma, isoToDay } from '../services/documents';
 import { listCustomers } from '../services/parties';
 import { normalizeTier, unitPriceFor } from '../services/pricing';
 import { findByBarcodeOrSku, listProducts, type ProductListItem } from '../services/products';
-import { closeSession, createSale, getOpenSession, getSale, openSession, zReport, type ZReport } from '../services/sales';
+import { closeSession, createSale, getOpenSession, openSession, zReport, type SaleResult, type ZReport } from '../services/sales';
 import { getPaymentMethods } from '../services/settings';
 import { useApp, useCan, useCtx } from '../state/app';
 import { useDebounced, useLive } from '../state/hooks';
@@ -37,7 +37,7 @@ export function POS() {
   const [method, setMethod] = useState('CASH');
   const [cartDiscount, setCartDiscount] = useState(0);
   const [tendered, setTendered] = useState('');
-  const [done, setDone] = useState<string | null>(null);
+  const [done, setDone] = useState<SaleResult | null>(null);
   const [sessionModal, setSessionModal] = useState<'open' | 'close' | null>(null);
   // Proforma (quote) mode: same cart, same price lists, but nothing is sold, no stock is needed and no money is taken.
   const [params, setParams] = useSearchParams();
@@ -110,7 +110,9 @@ export function POS() {
       lines: cart.map((l) => ({ product_id: l.p.id, quantity: l.qty, discount: l.discount })), customer_id: customerId || null, customer_name: customerId ? null : customerName,
       payment_method: method, amount_tendered: paid, cart_discount: cartDiscount,
     });
-    setDone(r.sale.id); reset();
+    // createSale returns the receipt snapshot. Use it directly so a cashier with
+    // sales.create can print this sale without gaining sales.read access.
+    setDone(r); reset();
   });
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if ((e.key === 'F9' || (e.ctrlKey && e.key === 'Enter')) && cart.length && !checkout.busy) { e.preventDefault(); checkout.run(); } };
@@ -215,7 +217,7 @@ export function POS() {
         </div>
       </aside>
 
-      <SaleDone saleId={done} receiptPrint={!invoiceSale && !docView} onInvoice={can('sales.create') ? (id) => setInvoiceSale(id) : undefined} onClose={() => { setDone(null); searchRef.current?.focus(); }} />
+      <SaleDone sale={done} receiptPrint={!invoiceSale && !docView} onInvoice={can('sales.create') && can('sales.read') ? (id) => setInvoiceSale(id) : undefined} onClose={() => { setDone(null); searchRef.current?.focus(); }} />
       {invoiceSale && <InvoiceDetailsModal saleId={invoiceSale} onClose={() => setInvoiceSale(null)} onCreated={(id) => { setInvoiceSale(null); setDocView(id); }} />}
       {docView && <DocumentView id={docView} onClose={() => setDocView(null)} onOpen={(id) => setDocView(id)} />}
       <SessionModal mode={sessionModal} onClose={() => setSessionModal(null)} sessionId={session?.id} />
@@ -223,22 +225,22 @@ export function POS() {
   );
 }
 
-function SaleDone({ saleId, onClose, onInvoice, receiptPrint }: { saleId: string | null; onClose: () => void; onInvoice?: (saleId: string) => void; receiptPrint: boolean }) {
+function SaleDone({ sale, onClose, onInvoice, receiptPrint }: { sale: SaleResult | null; onClose: () => void; onInvoice?: (saleId: string) => void; receiptPrint: boolean }) {
   const { t } = useTranslation();
   const { lang } = useApp();
-  const { data } = useLive((c) => (saleId ? getSale(c, saleId) : Promise.resolve(undefined)), [saleId]);
-  if (!saleId) return null;
+  if (!sale) return null;
+  const { sale: savedSale, items } = sale;
   return (
     <Modal open title={t('pos.saleDone')} onClose={onClose}
-      footer={<>{onInvoice && <Button variant="secondary" icon={<FilePlus2 className="h-4 w-4" />} onClick={() => onInvoice(saleId)}>{t('pos.invoice')}</Button>}<Button variant="secondary" icon={<Printer className="h-4 w-4" />} onClick={() => window.print()}>{t('pos.printReceipt')}</Button><Button onClick={onClose} autoFocus>{t('pos.newSale')}</Button></>}>
-      {data && (<>
-        <div className="mb-3 flex items-center gap-2 text-ok-text"><CheckCircle2 className="h-5 w-5" /><span className="font-semibold">{data.sale.receipt_no}</span></div>
-        <div className="num font-display text-[28px] font-bold text-ink">{formatMoney(data.sale.total, lang)}</div>
-        {data.sale.change_due > 0 && <div className="text-[14px] text-body">{t('pos.change')}: <b>{formatMoney(data.sale.change_due, lang)}</b></div>}
-        {data.sale.total > data.sale.amount_paid && <div className="text-[14px] text-warn-text">{t('pos.onCredit')}: <b>{formatMoney(data.sale.total - data.sale.amount_paid, lang)}</b></div>}
+      footer={<>{onInvoice && <Button variant="secondary" icon={<FilePlus2 className="h-4 w-4" />} onClick={() => onInvoice(savedSale.id)}>{t('pos.invoice')}</Button>}<Button variant="secondary" icon={<Printer className="h-4 w-4" />} onClick={() => window.print()}>{t('pos.printReceipt')}</Button><Button onClick={onClose} autoFocus>{t('pos.newSale')}</Button></>}>
+      <>
+        <div className="mb-3 flex items-center gap-2 text-ok-text"><CheckCircle2 className="h-5 w-5" /><span className="font-semibold">{savedSale.receipt_no}</span></div>
+        <div className="num font-display text-[28px] font-bold text-ink">{formatMoney(savedSale.total, lang)}</div>
+        {savedSale.change_due > 0 && <div className="text-[14px] text-body">{t('pos.change')}: <b>{formatMoney(savedSale.change_due, lang)}</b></div>}
+        {savedSale.total > savedSale.amount_paid && <div className="text-[14px] text-warn-text">{t('pos.onCredit')}: <b>{formatMoney(savedSale.total - savedSale.amount_paid, lang)}</b></div>}
         <p className="mt-3 text-[12px] text-faint">{t('pos.savedLocally')}</p>
-        {receiptPrint && <Receipt sale={data.sale} items={data.items} customer={data.customer} />}
-      </>)}
+        {receiptPrint && <Receipt sale={savedSale} items={items} />}
+      </>
     </Modal>
   );
 }
