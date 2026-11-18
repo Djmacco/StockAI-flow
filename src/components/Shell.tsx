@@ -138,12 +138,13 @@ function Sidebar() {
 function MobileNav() {
   const { t } = useTranslation();
   const { permissions: perms, desktop } = useApp();
-  const items = [
-    NAV[0], NAV[4], NAV[6], NAV[10], NAV[11],
-  ].filter((item) => (!item.perm || perms.has(item.perm)) && (!('webOnly' in item && item.webOnly) || !desktop));
+  // Keep the phone dock focused on the five everyday destinations. Sales is
+  // shown only to staff allowed to sell; movements remains a useful stock view.
+  const items = [NAV[0], NAV[4], NAV[3], NAV[6], NAV[10]]
+    .filter((item) => (!item.perm || perms.has(item.perm)) && (!('webOnly' in item && item.webOnly) || !desktop));
   return <nav aria-label={t('nav.primary', { defaultValue: 'Main navigation' })} style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }} className="mobile-bottom-nav z-30 grid shrink-0 border-t border-line bg-surface/95 px-1 pt-1 backdrop-blur md:hidden">
-    {items.map((item) => <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => cn('flex min-h-14 flex-col items-center justify-center gap-1 rounded-md px-1 text-[10px] font-medium transition-colors', isActive ? 'text-brand' : 'text-faint')}>
-      <item.icon className="h-[19px] w-[19px]" /><span className="max-w-full truncate">{t(`nav.${item.key}`)}</span>
+    {items.map((item) => <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => cn('flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg px-1 text-[10px] font-semibold transition-colors active:scale-95', isActive ? 'bg-brand-soft text-brand' : 'text-faint')}>
+      <item.icon aria-hidden="true" className="h-5 w-5" /><span className="max-w-full truncate">{t(`nav.${item.key}`)}</span>
     </NavLink>)}
   </nav>;
 }
@@ -185,7 +186,7 @@ export function Shell() {
       {!desktop && <div className="border-b border-warn/30 bg-warn-soft px-4 py-2 text-center text-[12px] font-medium text-warn-text">{lang === 'fr' ? 'La version Web est en lecture seule pendant que le PC principal reste la source de données. Le point de vente et les modifications du stock seront activés après la mise en place d’une synchronisation cloud bidirectionnelle fiable.' : 'Web view is read-only while the desktop hub remains the source of truth. POS and stock changes will be enabled after a safe two-way cloud relay is ready.'}</div>}
       <div className="flex min-h-0 flex-1">
         <Sidebar />
-        <main className="min-w-0 flex-1 overflow-y-auto p-6 max-md:p-3"><Outlet /></main>
+        <main className="min-w-0 flex-1 overflow-y-auto p-6 max-md:p-3 mobile-page"><Outlet /></main>
         <AssistantPanel />
       </div>
       {!desktop && <MobileNav />}

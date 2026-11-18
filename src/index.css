@@ -34,7 +34,8 @@
 
 html, body, #root { height: 100%; }
 body { @apply bg-canvas text-body font-sans text-[14px] antialiased; margin: 0; overflow: hidden; }
-.mobile-bottom-nav { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.mobile-bottom-nav { padding-bottom: max(env(safe-area-inset-bottom, 0px), 4px); }
+.mobile-page { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
 * { scrollbar-width: thin; scrollbar-color: rgb(var(--line-strong)) transparent; }
 .num { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: 'tnum', 'lnum'; }
 
@@ -46,6 +47,17 @@ body { @apply bg-canvas text-body font-sans text-[14px] antialiased; margin: 0; 
   .tbl .r { @apply text-right num; }
   .kbd { @apply rounded border border-line-strong bg-muted px-1.5 py-0.5 font-mono text-[10px] text-faint; }
   .focus-ring { @apply focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20; }
+}
+
+/* Keep dense desktop tables usable on phones without shrinking text to unreadable sizes. */
+@media (max-width: 767px) {
+  .mobile-page { padding: 12px 12px calc(18px + env(safe-area-inset-bottom, 0px)); }
+  .mobile-page h1 { font-size: 1.35rem; line-height: 1.25; }
+  .mobile-page .tbl { min-width: 680px; }
+  .mobile-page .tbl thead th { padding: 9px 10px; font-size: 10px; }
+  .mobile-page .tbl tbody td { padding: 10px; }
+  .mobile-page input, .mobile-page select, .mobile-page textarea { max-width: 100%; }
+  .mobile-page button { touch-action: manipulation; }
 }
 
 /* ---- printing: only #print-root (receipts, Z-report, recovery key) is printed, never the app */
