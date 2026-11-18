@@ -63,6 +63,12 @@ body { @apply bg-canvas text-body font-sans text-[14px] antialiased; margin: 0; 
   .mobile-page .tbl tbody td { padding: 10px; }
   .mobile-page input, .mobile-page select, .mobile-page textarea { max-width: 100%; }
   .mobile-page button { touch-action: manipulation; }
+  .company-monitor { width: 100%; max-width: none; }
+  .company-monitor > .rounded-xl { border-radius: 14px; }
+  .company-monitor .text-2xl { font-size: 1.2rem; line-height: 1.35; }
+  .company-monitor .grid.grid-cols-2 > * { min-width: 0; }
+  .company-monitor .grid.grid-cols-2 > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .company-monitor section[aria-label="Live inventory"] { padding-top: 4px; }
 }
 
 /* ---- printing: only #print-root (receipts, Z-report, recovery key) is printed, never the app */
