@@ -138,13 +138,13 @@ function Sidebar() {
 function MobileNav() {
   const { t } = useTranslation();
   const { permissions: perms, desktop } = useApp();
-  // Keep the phone dock focused on the five everyday destinations. Sales is
-  // shown only to staff allowed to sell; movements remains a useful stock view.
-  const items = [NAV[0], NAV[4], NAV[3], NAV[6], NAV[10]]
+  // Keep the phone dock focused on the four pages owners and staff open most.
+  // Each entry uses the same route and permission as the desktop sidebar.
+  const items = [NAV[0], NAV[4], NAV[3], NAV[10]]
     .filter((item) => (!item.perm || perms.has(item.perm)) && (!('webOnly' in item && item.webOnly) || !desktop));
-  return <nav aria-label={t('nav.primary', { defaultValue: 'Main navigation' })} style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }} className="mobile-bottom-nav z-30 grid shrink-0 border-t border-line bg-surface/95 px-1 pt-1 backdrop-blur md:hidden">
-    {items.map((item) => <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => cn('flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg px-1 text-[10px] font-semibold transition-colors active:scale-95', isActive ? 'bg-brand-soft text-brand' : 'text-faint')}>
-      <item.icon aria-hidden="true" className="h-5 w-5" /><span className="max-w-full truncate">{t(`nav.${item.key}`)}</span>
+  return <nav aria-label={t('nav.primary', { defaultValue: 'Main navigation' })} style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }} className="mobile-bottom-nav z-30 grid shrink-0 border-t border-line bg-surface px-3 pt-2 backdrop-blur md:hidden">
+    {items.map((item) => <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => cn('mobile-nav-link flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-xl px-1 text-[10px] font-semibold transition-all active:scale-95', isActive ? 'is-active text-brand' : 'text-faint hover:bg-muted')}>
+      <span className="mobile-nav-icon grid h-9 w-12 place-items-center rounded-full transition-all"><item.icon aria-hidden="true" className="h-[19px] w-[19px]" /></span><span className="max-w-full truncate leading-none">{t(`nav.${item.key}`)}</span>
     </NavLink>)}
   </nav>;
 }

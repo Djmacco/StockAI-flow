@@ -56,10 +56,13 @@ body { @apply bg-canvas text-body font-sans text-[14px] antialiased; margin: 0; 
   .app-shell { min-height: 100dvh; height: 100dvh; overflow: hidden; }
   .app-workspace { flex: 1 1 0%; min-height: 0; overflow: hidden; }
   .app-content { min-height: 0; overflow-x: hidden; overflow-y: auto; }
-  .mobile-bottom-nav { display: grid; position: sticky; bottom: 0; flex: 0 0 auto; min-height: 68px; padding-top: 6px; padding-bottom: max(env(safe-area-inset-bottom, 0px), 6px); box-shadow: 0 -6px 24px rgb(15 23 42 / .08); }
+  .mobile-bottom-nav { display: grid; position: sticky; bottom: 0; flex: 0 0 auto; min-height: 76px; padding-top: 7px; padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px); box-shadow: 0 -6px 24px rgb(15 23 42 / .08); }
+  .mobile-nav-link { text-decoration: none; -webkit-tap-highlight-color: transparent; }
+  .mobile-nav-link.is-active .mobile-nav-icon { background: rgb(var(--brand)); color: rgb(var(--on-brand)); box-shadow: 0 4px 12px rgb(var(--brand) / .24); }
+  .mobile-nav-link:not(.is-active) .mobile-nav-icon { background: rgb(var(--muted) / .72); color: rgb(var(--body)); }
   body:has(.company-monitor) { overflow-y: auto; }
   body:has(.company-monitor) #root { min-height: 100dvh; height: auto; }
-  .mobile-page { padding: 12px 12px calc(18px + env(safe-area-inset-bottom, 0px)); }
+  .mobile-page { padding: 16px 16px calc(24px + env(safe-area-inset-bottom, 0px)); }
   .mobile-page h1 { font-size: 1.35rem; line-height: 1.25; }
   .mobile-page .tbl { min-width: 680px; }
   .mobile-page .tbl thead th { padding: 9px 10px; font-size: 10px; }
@@ -72,6 +75,7 @@ body { @apply bg-canvas text-body font-sans text-[14px] antialiased; margin: 0; 
   .company-monitor .grid.grid-cols-2 > * { min-width: 0; }
   .company-monitor .grid.grid-cols-2 > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .company-monitor section[aria-label="Live inventory"] { padding-top: 4px; }
+  .company-monitor { padding-left: 2px; padding-right: 2px; }
 }
 
 /* ---- printing: only #print-root (receipts, Z-report, recovery key) is printed, never the app */
