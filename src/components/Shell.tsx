@@ -181,12 +181,12 @@ export function Shell() {
     return () => window.removeEventListener('keydown', h);
   }, [nav, perms, desktop]);
   return (
-    <div className="flex h-full flex-col">
+    <div className="app-shell flex h-full flex-col">
       <Header />
       {!desktop && <div className="border-b border-warn/30 bg-warn-soft px-4 py-2 text-center text-[12px] font-medium text-warn-text">{lang === 'fr' ? 'La version Web est en lecture seule pendant que le PC principal reste la source de données. Le point de vente et les modifications du stock seront activés après la mise en place d’une synchronisation cloud bidirectionnelle fiable.' : 'Web view is read-only while the desktop hub remains the source of truth. POS and stock changes will be enabled after a safe two-way cloud relay is ready.'}</div>}
-      <div className="flex min-h-0 flex-1">
+      <div className="app-workspace flex min-h-0 min-w-0 flex-1">
         <Sidebar />
-        <main className="min-w-0 flex-1 overflow-y-auto p-6 max-md:p-3 mobile-page"><Outlet /></main>
+        <main className="app-content min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-6 max-md:p-3 mobile-page"><Outlet /></main>
         <AssistantPanel />
       </div>
       {!desktop && <MobileNav />}
