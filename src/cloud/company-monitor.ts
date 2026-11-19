@@ -29,7 +29,7 @@ export interface MonitorOverview {
   };
 }
 export interface MonitorInventory {
-  products: { id: string; name: string; sku: string; quantity: number; minimumStock: number; unit: string; updatedAt: string }[];
+  products: { id: string; name: string; sku: string; barcode: string; quantity: number; minimumStock: number; unit: string; updatedAt: string }[];
   productCount: number; nextProductOffset: number | null;
   movements: { id: string; productName: string; type: string; quantity: number; createdAt: string; reason: string; userName: string }[];
   movementTotals: { received: number; removed: number; count: number };
