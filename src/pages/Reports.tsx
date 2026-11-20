@@ -23,8 +23,9 @@ function Bars({ data, color = 'fill-brand' }: { data: { label: string; value: nu
   const max = Math.max(1, ...data.map((d) => d.value));
   const w = 100 / Math.max(1, data.length);
   return (
-    <svg viewBox="0 0 100 40" className="h-44 w-full" preserveAspectRatio="none">
-      {data.map((d, i) => <rect key={i} x={i * w + w * 0.12} width={w * 0.76} y={38 - (d.value / max) * 36} height={Math.max(0.3, (d.value / max) * 36)} rx="0.5" className={color}><title>{d.label}: {d.value}</title></rect>)}
+    <svg viewBox="0 0 100 40" className="report-chart h-44 w-full" preserveAspectRatio="none" role="img" aria-label="Daily sales and profit chart">
+      <defs><linearGradient id={`chart-gradient-${color}`} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="currentColor" stopOpacity=".26"/><stop offset="100%" stopColor="currentColor" stopOpacity="0"/></linearGradient></defs>
+      {data.map((d, i) => <rect key={i} x={i * w + w * 0.12} width={w * 0.76} y={38 - (d.value / max) * 36} height={Math.max(0.3, (d.value / max) * 36)} rx="0.7" className={`${color} report-bar`} style={{'--bar-delay':`${Math.min(i,30)*18}ms`} as React.CSSProperties}><title>{d.label}: {d.value}</title></rect>)}
       <line x1="0" y1="38" x2="100" y2="38" className="stroke-line" strokeWidth="0.3" />
     </svg>
   );

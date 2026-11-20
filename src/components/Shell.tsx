@@ -168,6 +168,14 @@ function StatusBar() {
 export function Shell() {
   const nav = useNavigate();
   const { permissions: perms, desktop, lang } = useApp();
+  const [showLaunchMark, setShowLaunchMark] = useState(false);
+  useEffect(() => {
+    if (desktop || !window.matchMedia('(display-mode: standalone)').matches || sessionStorage.getItem('stockflow.launch-seen')) return;
+    sessionStorage.setItem('stockflow.launch-seen', '1');
+    setShowLaunchMark(true);
+    const timer = window.setTimeout(() => setShowLaunchMark(false), 1650);
+    return () => window.clearTimeout(timer);
+  }, [desktop]);
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if (e.key === 'F2' && perms.has('sales.create')) { e.preventDefault(); nav('/pos'); }
@@ -182,6 +190,7 @@ export function Shell() {
   }, [nav, perms, desktop]);
   return (
     <div className="app-shell flex h-full flex-col">
+      {showLaunchMark && <div className="launch-intro" role="status" aria-label="StockFlow AI"><div className="launch-orbit"><img src="/icons/stockflow-192.png" alt="" /></div><div className="launch-title">StockFlow AI</div><div className="launch-caption">Shop management</div></div>}
       <Header />
       {!desktop && <div className="border-b border-warn/30 bg-warn-soft px-4 py-2 text-center text-[12px] font-medium text-warn-text">{lang === 'fr' ? 'La version Web est en lecture seule pendant que le PC principal reste la source de données. Le point de vente et les modifications du stock seront activés après la mise en place d’une synchronisation cloud bidirectionnelle fiable.' : 'Web view is read-only while the desktop hub remains the source of truth. POS and stock changes will be enabled after a safe two-way cloud relay is ready.'}</div>}
       <div className="app-workspace flex min-h-0 min-w-0 flex-1">

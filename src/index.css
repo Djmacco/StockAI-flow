@@ -38,6 +38,21 @@ body { @apply bg-canvas text-body font-sans text-[14px] antialiased; margin: 0; 
 .mobile-page { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
 * { scrollbar-width: thin; scrollbar-color: rgb(var(--line-strong)) transparent; }
 .num { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: 'tnum', 'lnum'; }
+.launch-intro { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: rgb(var(--canvas)); animation: launch-fade .35s ease 1.25s both; pointer-events: none; }
+.launch-orbit { display: grid; width: 96px; height: 96px; place-items: center; border: 1px solid rgb(var(--brand) / .18); border-radius: 30px; background: rgb(var(--brand-soft)); box-shadow: 0 16px 48px rgb(var(--brand) / .18); animation: launch-pop .8s cubic-bezier(.2,.8,.2,1) both, launch-float 1.8s ease-in-out .8s infinite; }
+.launch-orbit::after { position: absolute; width: 118px; height: 118px; border: 1px solid rgb(var(--brand) / .28); border-radius: 36px; content: ''; animation: launch-ring 1.4s ease-out .2s both; }
+.launch-orbit img { width: 60px; height: 60px; border-radius: 18px; animation: launch-icon-turn .8s cubic-bezier(.2,.8,.2,1) both; }
+.launch-title { color: rgb(var(--ink)); font-family: Chivo, sans-serif; font-size: 25px; font-weight: 700; letter-spacing: -.03em; animation: launch-text .55s ease .2s both; }
+.launch-caption { color: rgb(var(--faint)); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; animation: launch-text .55s ease .35s both; }
+@keyframes launch-pop { from { opacity: 0; transform: translateY(18px) scale(.72) rotate(-8deg); } to { opacity: 1; transform: translateY(0) scale(1) rotate(0); } }
+@keyframes launch-icon-turn { from { transform: scale(.7) rotate(-24deg); } to { transform: scale(1) rotate(0); } }
+@keyframes launch-ring { 0% { opacity: 0; transform: scale(.76); } 35% { opacity: .8; } 100% { opacity: 0; transform: scale(1.18); } }
+@keyframes launch-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes launch-text { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes launch-fade { to { opacity: 0; visibility: hidden; } }
+.report-bar { transform-box: fill-box; transform-origin: bottom; animation: report-rise .55s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--bar-delay,0ms); }
+@keyframes report-rise { from { transform: scaleY(.04); opacity: .35; } to { transform: scaleY(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .launch-intro, .launch-orbit, .launch-orbit::after, .launch-orbit img, .launch-title, .launch-caption, .report-bar { animation: none !important; } }
 
 @layer components {
   .tbl { @apply w-full text-left text-[13px]; }
